@@ -1,0 +1,119 @@
+server:
+  port: 8090
+spring:
+  profiles:
+    active: dev
+  application:
+    name: content-center
+---
+#mybatis-plus配置自增策略
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: AUTO
+spring:
+  profiles: dev
+  datasource:
+    #>=6.x com.mysql.cj.jdbc.Driver
+    #<=5.x com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/content_center?characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    #密码需要使用双引号
+    password: "#INCLUDE12345"
+  cloud:
+    nacos:
+      discovery:
+        #指定nacos server的地址
+        server-addr: localhost:8848
+        namespace: 5d1d5b0f-d00a-43f4-8706-901c97ee698f
+        #集群划分
+        cluster-name: BJ
+        #元数据
+        metadata:
+          version: v1
+          targetVersion: v2
+    #整合Sentinel
+    sentinel:
+      #filter:
+      #关闭掉对Springmvc端点的保护
+      #enabled: false
+      transport:
+        #指定Sentinel控制台的地址
+        dashboard: localhost:8080
+      #关闭懒加载
+      eager: true
+    #配置spring-cloud-stream
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:9876
+        bindings:
+          output:
+            producer:
+              transactional: true
+              group: tx_add_bonus
+
+      bindings:
+        output:
+          destination: add_bonus
+#为user-center配置ribbon负载均衡规则
+#user-center:
+#   ribbon:
+#     NFLoadBalancerRulerClassName: com.ldg.app.contentcenter.configuration.ribbon.NacosWeightedRule
+ribbon:
+  eager-load:
+    clients: user-center
+    enabled: true
+logging:
+  level:
+    #Feign的日志打印是要建立在FeignClient接口的日志级别为debug基础上
+    com.ldg.app.contentcenter.feignclient.UserCenterFeignClient: debug
+    com.alibaba.nacos: error
+#feign:
+#  client:
+#    config:
+#      #想要调用的微服务名称
+#      user-center:
+#         loggerLevel: BASIC
+feign:
+  #让feign使用apache httpclient做请求 而不是默认的urlConnection
+  httpclient:
+    enabled: true
+    #feign最大连接数  可以结合压测结果来调整
+    max-connections: 200
+    #feign单个路径的最大连接数
+    max-connections-per-route: 50
+  sentinel:
+    #Feign整合Sentinel
+    enabled: true
+  client:
+    config:
+      #全局配置
+      default:
+        #日志级别
+        loggerLevel: full
+        #拦截器级别
+#        requestInterceptors:
+#          - com.ldg.app.contentcenter.interceptor.TokenRelayRequestInterceptor
+#暴露actuator路径
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+#整合rocketmq
+#rocketmq:
+#  name-server: localhost:9876
+#  producer:
+#    #小坑 必须指定group
+#    group: test-group
+
+#jwt配置
+jwt:
+  secret: aaabbbcccdddeeefffggghhhiiijjjkkklllmmmnnnooopppqqqrrrsssttt
+  expire-time-in-second: 1209600
+  signatureAlgorithm: HS256
+---
+spring:
+  profiles: prod
