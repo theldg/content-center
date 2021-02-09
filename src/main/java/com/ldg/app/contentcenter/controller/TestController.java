@@ -53,7 +53,7 @@ public class TestController {
     public String getToken() {
         Map<String, Object> map = new HashMap<>();
         map.put("id", 1);
-        map.put("role", "user");
+        map.put("role", "admin");
         map.put("wxNickname", "dds");
         return jwtOperator.generateToken(map);
     }

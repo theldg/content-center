@@ -94,5 +94,21 @@ public class ControllerExceptionAdvice {
         );
     }
 
-
+    /**
+     * 处理非法参数异常
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ReslutDto> illegalArgumentExceptionHandler(IllegalArgumentException e) {
+        return new ResponseEntity<>(
+                ReslutDto.builder()
+                        .msg(e.getMessage())
+                        .code(ReslutCode.BadRequest.getCode())
+                        .data(ReslutCode.BadRequest.getMsg())
+                        .build()
+                , HttpStatus.BAD_REQUEST
+        );
+    }
 }

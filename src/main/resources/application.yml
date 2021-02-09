@@ -12,6 +12,14 @@ mybatis-plus:
     db-config:
       id-type: AUTO
 spring:
+  #zipkin
+  zipkin:
+    #server地址
+    base-url: http://localhost:9411
+  sleuth:
+    sampler:
+      #抽样率(100%)
+      probability: 1.0
   profiles: dev
   datasource:
     #>=6.x com.mysql.cj.jdbc.Driver
@@ -112,7 +120,7 @@ management:
 #jwt配置
 jwt:
   secret: aaabbbcccdddeeefffggghhhiiijjjkkklllmmmnnnooopppqqqrrrsssttt
-  expire-time-in-second: 1209600
+  expire-time-in-second: 180
   signatureAlgorithm: HS256
 ---
 spring:
